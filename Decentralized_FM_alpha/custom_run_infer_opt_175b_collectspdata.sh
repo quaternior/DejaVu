@@ -1,5 +1,5 @@
 
-file=./c4_train/c4_train.json
+file=./c4_train/c4_train.jsonl
     
 echo "start running ${file}"
 
