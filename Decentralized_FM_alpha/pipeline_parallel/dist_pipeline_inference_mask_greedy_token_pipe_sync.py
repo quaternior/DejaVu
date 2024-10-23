@@ -339,7 +339,7 @@ class DistGreedyInferenceMaskTokenPipeSync(DistGreedyInferenceTokePipeSync):
             print(f"loading layer {global_layer_index}")
             self.layers["block" + str(layer_index)] = (
                 GPTBlock.from_pretrained(
-                    self.model_name, layer_index=global_layer_index
+                    self.model_name, layer_index=global_layer_index #Problem occurs
                 )
                 .to(self.dtype)
                 .eval()
