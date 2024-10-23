@@ -31,6 +31,7 @@ class DistGreedyInferenceTokePipeSync:
 
         self.num_layers = args.num_layers
         self.model_name = args.model_name
+        print(self.model_name)
         self.model_type = args.model_type
 
         # assert (args.batch_size % args.micro_batch_size == 0)

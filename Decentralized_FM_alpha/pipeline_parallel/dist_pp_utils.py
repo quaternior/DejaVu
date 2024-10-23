@@ -55,7 +55,7 @@ def get_pp_inference_module(args, device, rank=None, be_coordinated=False):
     elif args.pp_mode == 'pipe_sync_greedy_mask_token_pipe':
         return DistGreedyInferenceMaskTokenPipeSync(args, device, rank=rank)
     elif args.pp_mode == 'pipe_sync_sample_mask_token_pipe':
-        return DistSampleInferenceMaskTokenPipeSync(args, device, rank=rank, be_coordinated=be_coordinated)
+        return DistSampleInferenceMaskTokenPipeSync(args, device, rank=rank, be_coordinated=be_coordinated) #Problem occurs
     elif args.pp_mode == 'pipe_sync_sample_mask_token_sparse_pipe':
         return DistSampleInferenceMaskTokenSparsePipeSync(args, device, rank=rank, be_coordinated=be_coordinated)
     elif args.pp_mode == 'pipe_sync_sample_mask_token_pipe_refactored':

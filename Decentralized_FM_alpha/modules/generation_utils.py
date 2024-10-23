@@ -11,8 +11,8 @@ from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 import torch
 from torch import nn
 
-from transformers.generation_beam_constraints import Constraint, DisjunctiveConstraint, PhrasalConstraint
-from transformers.generation_beam_search import BeamScorer, BeamSearchScorer, ConstrainedBeamSearchScorer
+from transformers.generation_beam.constraints import Constraint, DisjunctiveConstraint, PhrasalConstraint
+from transformers.generation_beam.search import BeamScorer, BeamSearchScorer, ConstrainedBeamSearchScorer
 from transformers.generation_logits_process import (
     EncoderNoRepeatNGramLogitsProcessor,
     ExponentialDecayLengthPenalty,

@@ -78,7 +78,7 @@ def main():
     request_processor = get_request_processor(args)
     request_processor.set_arguments(args)
 
-    pipe = get_pp_inference_module(args, device)
+    pipe = get_pp_inference_module(args, device) #Problem occurs
 
     if args.profiling == "no-profiling":
         distributed_inference_mask_iter(args, pipe, device, request_processor)
