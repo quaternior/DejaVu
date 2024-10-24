@@ -486,7 +486,7 @@ class GPTBlock(OPTDecoderLayer):
         else:
             print("fp_i exceeds fp_att_query.shape[0]")
             exit()
-        #Add
+        #Add(jhkim)
         self.fp_att_query.flush()
         # 125m, 1.7B, ..., 175B applies layer norm BEFORE attention
         if self.do_layer_norm_before:
