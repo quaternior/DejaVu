@@ -22,16 +22,9 @@ DATA = {
   
 }
 
-MODEL_CHOICES = ['175b', '66b', '30b']
+MODEL_CHOICES = ['175b', '66b', '30b', '1.3b']
 DATA_CHOICES = ['c4']
 CONFIG = {
-    '1.3b':{
-        'num_layer': 24,
-        'ckt_storage': "bylayer",
-        'd':2048,
-        'h': 32,
-        'N':400000,
-    },
     '175b':{
         'num_layer': 95,
         'ckt_storage': "bylayer",
@@ -53,6 +46,13 @@ CONFIG = {
         'h': 32,
         'N':400000,
     },
+    '1.3b':{
+        'num_layer': 24,
+        'ckt_storage': "bylayer",
+        'd':2048,
+        'h': 32,
+        'N':400000,
+    }
 }
 
 class BasicDataset(Dataset):
@@ -78,15 +78,15 @@ class BasicDataset(Dataset):
         return x, y
 
 def get_data(args, l):
+    print('config : ' + CONFIG[args.model]['ckt_storage'])
     if CONFIG[args.model]['ckt_storage'] == "bylayer":
-        path = f"{DATA[args.model][args.dataset]}/att_x_{l-1}.mmap"
+        path = f"{DATA[args.model][args.dataset]}/att_sp_x_{l}.mmap"
         print(f"Reading query from {path}")
         query = np.array(np.memmap(path, dtype='float16', mode='r', shape=(400000,CONFIG[args.model]['d']))[: CONFIG[args.model]['N']])
-    
+        print(query)
         path = f"{DATA[args.model][args.dataset]}/score_norm_{l}.mmap"
         print(f"Reading attention label from {path}")
         label = np.array(np.memmap(path, dtype='float16', mode='r', shape=(400000,CONFIG[args.model]['h']))[: CONFIG[args.model]['N']])
-        
         num_valid = (label.sum(-1) > 0).sum()
         print(num_valid)
         return  query[:num_valid], label[:num_valid]
