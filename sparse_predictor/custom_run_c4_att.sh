@@ -1,3 +1,4 @@
+# (jhkim)
 for l in $(seq 0 2 24)
 do  
     (trap 'kill 0' SIGINT; \

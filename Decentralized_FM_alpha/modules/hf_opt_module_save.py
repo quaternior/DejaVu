@@ -487,7 +487,7 @@ class GPTBlock(OPTDecoderLayer):
             print("fp_i exceeds fp_att_query.shape[0]")
             exit()
         #Add(jhkim)
-        self.fp_att_query.flush()
+        # self.fp_att_query.flush()
         # 125m, 1.7B, ..., 175B applies layer norm BEFORE attention
         if self.do_layer_norm_before:
             hidden_states = self.self_attn_layer_norm(hidden_states)
@@ -522,7 +522,7 @@ class GPTBlock(OPTDecoderLayer):
                 _hidden_states[: end - begin].detach().cpu().numpy()
             )
         #Add(jhkim)
-        self.fp_mlp_query.flush()
+        # self.fp_mlp_query.flush()
         # 125m, 1.7B, ..., 175B applies layer norm BEFORE MLP
         if self.do_layer_norm_before:
             hidden_states = self.final_layer_norm(hidden_states)
@@ -539,7 +539,7 @@ class GPTBlock(OPTDecoderLayer):
             self.fp_label[begin:end] = label[: end - begin].detach().cpu().numpy()
             self.fp_i += label.size(0)
         #Add(jhkim)
-        self.fp_label.flush()
+        # self.fp_label.flush()
         hidden_states = self.fc2(hidden_states)
         hidden_states = residual + hidden_states
         hidden_states = hidden_states.view(hidden_states_shape)
