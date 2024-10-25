@@ -421,13 +421,15 @@ class DistGreedyInferenceMaskTokenPipeSync(DistGreedyInferenceTokePipeSync):
         self.share_prefix.clear()  # token generation do not need this
 
     def _forward_compute_prompt_seq(self, index, seq, mask):
-        #(jhkim) Debug(result : )
+        #(jhkim) Debug(result : works well)
         print("seq : ")
         print(seq)
         print("Compute prompt seq<", index, ">.")
         if self.pp_rank == 0:
             self.input_seq_emb[index] = self.layers["emb"](seq, mask=mask)
-
+        # #(jhkim) Debug(result : not works well)
+        print("current_emb after process inputs : ")
+        print(self.input_seq_emb[index])
         current_emb = self.input_seq_emb[index]
         caches = [None] * self.num_layers
         previous_emb = None
