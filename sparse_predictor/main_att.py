@@ -18,6 +18,9 @@ DATA = {
     },
     "1.3b": {
         "c4": "../Decentralized_FM_alpha",
+    },
+    "llama-3-8b-inst":{
+        "c4": "../Decentralized_FM_alpha/llama-3-8b-inst"
     }
   
 }

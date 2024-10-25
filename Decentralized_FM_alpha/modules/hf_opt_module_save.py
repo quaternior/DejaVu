@@ -421,7 +421,7 @@ class GPTBlock(OPTDecoderLayer):
             dtype="float16",
             mode="w+",
             shape=(
-                40000,
+                400000,
                 config.hidden_size, #Problem occurs
             ),
         )
@@ -430,7 +430,7 @@ class GPTBlock(OPTDecoderLayer):
             dtype="float16",
             mode="w+",
             shape=(
-                40000,
+                400000,
                 config.hidden_size,
             ),
         )
@@ -439,7 +439,7 @@ class GPTBlock(OPTDecoderLayer):
             dtype="float16",
             mode="w+",
             shape=(
-                40000,
+                400000,
                 config.hidden_size * 4,
             ),
         )
@@ -449,7 +449,7 @@ class GPTBlock(OPTDecoderLayer):
             dtype="float16",
             mode="w+",
             shape=(
-                40000,
+                400000,
                 config.num_attention_heads,
             ),
         )
