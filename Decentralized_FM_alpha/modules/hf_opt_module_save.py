@@ -10,7 +10,8 @@ from transformers.models.opt.modeling_opt import OPTDecoderLayer
 from transformers.models.opt.modeling_opt import OPTAttention as _OPTAttention
 from transformers.models.opt.modeling_opt import OPTLearnedPositionalEmbedding
 from transformers.models.opt.configuration_opt import OPTConfig as GPTConfig
-
+#(jhkim)
+import traceback
 
 def _make_causal_mask(
     input_ids_shape: torch.Size,
@@ -469,8 +470,10 @@ class GPTBlock(OPTDecoderLayer):
             mask, x.shape[:2], x, past_length
         )
         #(jhkim) Debugging
+        print(traceback.extract_stack())
         print('x : ')
         print(x)
+        #debugging end
         hidden_states = x  # alias
         residual = hidden_states
 

@@ -422,11 +422,15 @@ class DistGreedyInferenceMaskTokenPipeSync(DistGreedyInferenceTokePipeSync):
 
     def _forward_compute_prompt_seq(self, index, seq, mask):
         #(jhkim)
-        print("seq : ")
-        print(seq)
+        # print("seq : ")
+        # print(seq)
         print("Compute prompt seq<", index, ">.")
         if self.pp_rank == 0:
             self.input_seq_emb[index] = self.layers["emb"](seq, mask=mask)
+        #(jhkim)
+        print("self.input_seq_emb[index]  : ")
+        print(self.input_seq_emb[index])
+
         current_emb = self.input_seq_emb[index]
         caches = [None] * self.num_layers
         previous_emb = None
@@ -556,7 +560,7 @@ class DistGreedyInferenceMaskTokenPipeSync(DistGreedyInferenceTokePipeSync):
             # repeat n times
             mask = mask.repeat(self.num_completions, 1)
 
-        # print("Compute generate seq micro-batch <", index, ">.")
+        print("Compute generate seq micro-batch <", index, ">.")
         if self.pp_rank == 0:
             cache = self._get_cached_attention(0, index)
             current_emb = self.layers["emb"](
