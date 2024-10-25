@@ -8,7 +8,7 @@ ARGS="--model-name facebook/opt-1.3b \
 --seed 42 \
 --fp16 \
 --num-layers 12 \
---max-layers 96 \
+--max-layers 24 \
 --budget 22800 \
 --num-iters 2000 \
 --dist-url tcp://127.0.0.1:9032 \

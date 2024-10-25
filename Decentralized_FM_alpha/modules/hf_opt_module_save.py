@@ -480,6 +480,7 @@ class GPTBlock(OPTDecoderLayer):
             begin, end = self.fp_i, min(
                 self.fp_i + _hidden_states.size(0), self.fp_att_query.shape[0]
             )
+            print(_hidden_states[: end - begin].detach().cpu().numpy())
             self.fp_att_query[begin:end] = (
                 _hidden_states[: end - begin].detach().cpu().numpy()
             )

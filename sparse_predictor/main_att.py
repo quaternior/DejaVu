@@ -27,6 +27,12 @@ DATA = {
 
 MODEL_CHOICES = ['175b', '66b', '30b', '1.3b']
 DATA_CHOICES = ['c4']
+#*jhkim
+#Config from config.json (config.json -> CONFIG)
+#"num_hidden_layers" -> 'num_layer'
+#"hidden_size" -> 'd'
+#"num_attention_heads" -> 'h'
+# ? -> N
 CONFIG = {
     '175b':{
         'num_layer': 95,
@@ -53,6 +59,13 @@ CONFIG = {
         'num_layer': 24,
         'ckt_storage': "bylayer",
         'd':2048,
+        'h': 32,
+        'N':400000,
+    },
+    "llama-3-8b-inst":{
+        'num_layer': 24,
+        'ckt_storage': "bylayer",
+        'd':4096,
         'h': 32,
         'N':400000,
     }
