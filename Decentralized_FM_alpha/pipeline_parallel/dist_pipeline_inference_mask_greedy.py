@@ -280,6 +280,8 @@ class DistGreedyInferenceMaskAsync:
 
     def _forward_compute_prompt_seq(self, index, seq=None, mask=None):
         print("Compute prompt seq<", index, ">.")
+        #(jhkim) Debug
+        print("seq : ")
         if self.pp_rank == 0:
             self.input_seq_emb[index] = self.layers['emb'](seq, mask=mask)
         current_emb = None
