@@ -55,7 +55,7 @@ def distributed_inference_mask_iter(args, pipeline, device, request_processor,
             attention_mask = inputs['attention_mask'].to(device)
             output_ids_list = []
             #(jhkim)
-            print('input_ids : ')
+            print("input_ids : ")
             print(input_ids)
             #Problem occurs
             current_iter_time = pipeline.inference_batch(input_ids, output_ids_list, attention_mask=attention_mask)

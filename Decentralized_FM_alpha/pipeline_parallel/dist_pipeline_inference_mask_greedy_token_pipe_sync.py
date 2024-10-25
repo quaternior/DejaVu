@@ -427,9 +427,6 @@ class DistGreedyInferenceMaskTokenPipeSync(DistGreedyInferenceTokePipeSync):
         print("Compute prompt seq<", index, ">.")
         if self.pp_rank == 0:
             self.input_seq_emb[index] = self.layers["emb"](seq, mask=mask)
-        #(jhkim)
-        print("self.input_seq_emb[index]  : ")
-        print(self.input_seq_emb[index])
 
         current_emb = self.input_seq_emb[index]
         caches = [None] * self.num_layers
@@ -439,7 +436,8 @@ class DistGreedyInferenceMaskTokenPipeSync(DistGreedyInferenceTokePipeSync):
         mask, current_emb, caches = self.share_prefix.process_inputs(
             seq, mask, current_emb, caches
         )
-
+        print("current_emb after process inputs : ")
+        print(current_emb)
         if SPARSE_ATT:
             for layer_index in range(self.num_layers):
                 input_emb = current_emb.clone()
@@ -633,6 +631,9 @@ class DistGreedyInferenceMaskTokenPipeSync(DistGreedyInferenceTokePipeSync):
         return attention_mask
 
     def forward_seq_pipeline_stage(self, input_data=None, attention_mask=None):
+        #(jhkim)
+        print('input data(forward_seq_pipeline_stage : ')
+        print(input_data)
         if self.pp_rank == 0 or self.pp_rank == self.pipeline_group_size - 1:
             assert input_data is not None
             if self.pp_rank == 0 and self.generate_seq_length == 0:
@@ -809,6 +810,9 @@ class DistGreedyInferenceMaskTokenPipeSync(DistGreedyInferenceTokePipeSync):
             self.profile_token_pipeline_step(step)
 
     def inference_batch(self, input_=None, output_=None, attention_mask=None):
+        #(jhkim)
+        print('input_ : ')
+        print(input_)
         print(f"<inference_batch> rank-<{self.pp_rank}> Enter!")
         self.comm.barrier()
         print(f"<inference_batch> rank-<{self.pp_rank}> after first barrier!")
