@@ -46,6 +46,9 @@ def get_pp_finetune_module(args, config, device, use_dp, rank=None):
 
 
 def get_pp_inference_module(args, device, rank=None, be_coordinated=False):
+    #(jhkim) debug
+    print('args.pp_mode : ')
+    print(args.pp_mode)
     if args.pp_mode == 'pipe_async_greedy':
         return DistGreedyInferenceAsync(args, device, rank=rank)
     elif args.pp_mode == 'pipe_sync_greedy':
