@@ -46,7 +46,6 @@ def distributed_inference_foo_iter(args, pipeline, device, request_processor,
 
 def distributed_inference_mask_iter(args, pipeline, device, request_processor,
                                     client: CoordinatorInferenceHTTPClient = None):
-    
     total_time = 0
     if get_pipeline_parallel_rank() == 0:
         output_requests = []
@@ -55,6 +54,10 @@ def distributed_inference_mask_iter(args, pipeline, device, request_processor,
             input_ids = inputs['text'].to(device)
             attention_mask = inputs['attention_mask'].to(device)
             output_ids_list = []
+            #(jhkim)
+            print('input_ids : ')
+            print(input_ids)
+            #Problem occurs
             current_iter_time = pipeline.inference_batch(input_ids, output_ids_list, attention_mask=attention_mask)
             if i > 0:
                 total_time += current_iter_time
@@ -259,6 +262,7 @@ def distributed_inference_mask_server(args, pipeline, device):
             pipeline.comm.broadcast(attention_mask, src=0)
             
             output_ids_list = []
+            #Problem occurs
             current_iter_time = pipeline.inference_batch(input_ids, output_ids_list, attention_mask=attention_mask)
             
             for i in range(pipeline.num_completions):

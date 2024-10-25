@@ -469,8 +469,7 @@ class GPTBlock(OPTDecoderLayer):
         attention_mask = _prepare_decoder_attention_mask(
             mask, x.shape[:2], x, past_length
         )
-        #(jhkim) Debugging
-        print(traceback.extract_stack())
+        #(jhkim) debugging
         print('x : ')
         print(x)
         #debugging end
