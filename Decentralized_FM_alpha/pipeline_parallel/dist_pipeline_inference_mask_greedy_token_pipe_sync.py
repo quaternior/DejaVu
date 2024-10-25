@@ -421,9 +421,9 @@ class DistGreedyInferenceMaskTokenPipeSync(DistGreedyInferenceTokePipeSync):
         self.share_prefix.clear()  # token generation do not need this
 
     def _forward_compute_prompt_seq(self, index, seq, mask):
-        #(jhkim)
-        # print("seq : ")
-        # print(seq)
+        #(jhkim) Debug(result : )
+        print("seq : ")
+        print(seq)
         print("Compute prompt seq<", index, ">.")
         if self.pp_rank == 0:
             self.input_seq_emb[index] = self.layers["emb"](seq, mask=mask)
@@ -436,9 +436,9 @@ class DistGreedyInferenceMaskTokenPipeSync(DistGreedyInferenceTokePipeSync):
         mask, current_emb, caches = self.share_prefix.process_inputs(
             seq, mask, current_emb, caches
         )
-        #(jhkim) Debug
-        print("current_emb after process inputs : ")
-        print(current_emb)
+        # #(jhkim) Debug(result : not works well)
+        # print("current_emb after process inputs : ")
+        # print(current_emb)
         if SPARSE_ATT:
             for layer_index in range(self.num_layers):
                 input_emb = current_emb.clone()
