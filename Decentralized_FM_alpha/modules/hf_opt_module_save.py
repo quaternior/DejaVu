@@ -468,7 +468,9 @@ class GPTBlock(OPTDecoderLayer):
         attention_mask = _prepare_decoder_attention_mask(
             mask, x.shape[:2], x, past_length
         )
-
+        #(jhkim) Debugging
+        print('x : ')
+        print(x)
         hidden_states = x  # alias
         residual = hidden_states
 
@@ -480,7 +482,8 @@ class GPTBlock(OPTDecoderLayer):
             begin, end = self.fp_i, min(
                 self.fp_i + _hidden_states.size(0), self.fp_att_query.shape[0]
             )
-            print(_hidden_states[: end - begin].detach().cpu().numpy())
+            #(jhkim) Debugging
+            # print(_hidden_states[: end - begin].detach().cpu().numpy())
             self.fp_att_query[begin:end] = (
                 _hidden_states[: end - begin].detach().cpu().numpy()
             )
