@@ -436,6 +436,7 @@ class DistGreedyInferenceMaskTokenPipeSync(DistGreedyInferenceTokePipeSync):
         mask, current_emb, caches = self.share_prefix.process_inputs(
             seq, mask, current_emb, caches
         )
+        #(jhkim) Debug
         print("current_emb after process inputs : ")
         print(current_emb)
         if SPARSE_ATT:
@@ -631,20 +632,21 @@ class DistGreedyInferenceMaskTokenPipeSync(DistGreedyInferenceTokePipeSync):
         return attention_mask
 
     def forward_seq_pipeline_stage(self, input_data=None, attention_mask=None):
-        #(jhkim)
-        print('input data(forward_seq_pipeline_stage : ')
-        print(input_data)
+        #(jhkim) debug
+
         if self.pp_rank == 0 or self.pp_rank == self.pipeline_group_size - 1:
             assert input_data is not None
             if self.pp_rank == 0 and self.generate_seq_length == 0:
                 # input reduce 1 for first node
                 input_data = input_data[:, :-1]
-
+        print('input data(forward_seq_pipeline_stage:642) : ')
+        print(input_data)
         if input_data is not None:
             input_seqs = torch.chunk(input_data, self.seq_num, dim=0)
         else:
             input_seqs = [None] * self.seq_num
-
+        print('input seqs(forward_seq_pipeline_stage:648) : ')
+        print(input_seqs)
         if attention_mask is not None:
             if self.generate_seq_length == 0:
                 # attention reduce 1
@@ -810,8 +812,8 @@ class DistGreedyInferenceMaskTokenPipeSync(DistGreedyInferenceTokePipeSync):
             self.profile_token_pipeline_step(step)
 
     def inference_batch(self, input_=None, output_=None, attention_mask=None):
-        #(jhkim)
-        print('input_ : ')
+        # #(jhkim)
+        # print('input_ : ')
         print(input_)
         print(f"<inference_batch> rank-<{self.pp_rank}> Enter!")
         self.comm.barrier()
