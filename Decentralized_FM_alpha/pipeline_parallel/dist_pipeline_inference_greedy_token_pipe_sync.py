@@ -33,6 +33,8 @@ class DistGreedyInferenceTokePipeSync:
         self.model_name = args.model_name
         print(self.model_name)
         self.model_type = args.model_type
+        #(jhkim) Debug
+        print(self.model_type)
 
         # assert (args.batch_size % args.micro_batch_size == 0)
         self.seq_num = args.batch_size
@@ -170,6 +172,9 @@ class DistGreedyInferenceTokePipeSync:
             from modules.hf_gptj_module import GPTConfig
             config = GPTConfig.from_pretrained(self.model_name)
             return config.n_embd
+        #(jhkim) OPTConfig add
+        elif self.model_type == 'opt':
+            from modules.hf_opt_module import GPTEmbeddings, GPTBlock, GPTLMHead
         else:
             raise Exception(f'unknown model type {self.model_type}')
 
@@ -178,6 +183,9 @@ class DistGreedyInferenceTokePipeSync:
             from modules.hf_gpt2_module import GPTEmbeddings, GPTBlock, GPTLMHead
         elif self.model_type == 'gptj':
             from modules.hf_gptj_module import GPTEmbeddings, GPTBlock, GPTLMHead
+        #(jhkim) OPTConfig add
+        elif self.model_type == 'opt':
+            from modules.hf_opt_module import GPTEmbeddings, GPTBlock, GPTLMHead
         else:
             raise Exception(f'unknown model type {self.model_type}')
 
