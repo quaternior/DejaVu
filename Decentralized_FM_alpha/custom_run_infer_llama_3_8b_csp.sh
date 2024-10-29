@@ -3,8 +3,8 @@ file=./c4_train/c4_train.jsonl
     
 echo "start running ${file}"
 
-ARGS="--model-name meta-llama/Meta-Llama-3-8B-Instruct \
---model-type opt-save \
+ARGS="--model-name ./pretrained/meta-llama/Meta-Llama-3-8B \
+--model-type llama-save \
 --seed 42 \
 --fp16 \
 --num-layers 12 \

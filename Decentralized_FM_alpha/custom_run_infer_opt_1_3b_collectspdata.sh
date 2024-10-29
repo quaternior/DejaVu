@@ -3,7 +3,7 @@ file=./c4_train/c4_train.jsonl
     
 echo "start running ${file}"
 
-ARGS="--model-name facebook/opt-1.3b \
+ARGS="--model-name ./pretrained_models/facebook/opt-1.3b \
 --model-type opt-save \
 --seed 42 \
 --fp16 \

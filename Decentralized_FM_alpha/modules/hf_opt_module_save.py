@@ -131,22 +131,22 @@ class GPTEmbeddings(nn.Module):
         #(jhkim)(Add) debug. 
         print('config: ')   
         print(config)
-        module = cls(config).eval()
+        # module = cls(config).eval()
         module = torch.nn.utils.skip_init(cls, config).eval()  # fast init
         #(jhkim)(Add)
-        from huggingface_hub import hf_hub_download
-
-        hf_hub_download(repo_id=model_path, filename="pytorch_embs.pt", local_dir=model_path)
-        print('Download complete!')
         try:
-            module.load_state_dict(
-                torch.load(
-                    os.path.join(
-                        model_path,
-                        "pytorch_embs.pt",
-                    )
-                )
+            # module.load_state_dict(
+            #     torch.load(
+            #         os.path.join(
+            #             model_path,
+            #             "pytorch_embs.pt",
+            #         )
+            #     )
+            # )
+            state_dict = torch.hub.load_state_dict_from_url(
+                f"https://huggingface.co/{model_path}/resolve/main/pytorch_embs.pt"
             )
+            module.load_state_dict(state_dict)
         except:
             print("Cannot load from <model_name>. The model is randomly initialized.")
         return module
