@@ -122,10 +122,22 @@ class GPTEmbeddings(nn.Module):
 
     @classmethod
     def from_pretrained(cls, model_path, config=None):
+        #(jhkim)Error may occurs here. Model is not loaded appropriately.
+        #(jhkim)(Add) debug. model_path = model_name, and config = None
+        print('model_path : ')
+        print(model_path)
         if config is None:
             config = GPTConfig.from_pretrained(model_path)
-        # module = cls(config).eval()
+        #(jhkim)(Add) debug. 
+        print('config: ')   
+        print(config)
+        module = cls(config).eval()
         module = torch.nn.utils.skip_init(cls, config).eval()  # fast init
+        #(jhkim)(Add)
+        from huggingface_hub import hf_hub_download
+
+        hf_hub_download(repo_id=model_path, filename="pytorch_embs.pt", local_dir=model_path)
+        print('Download complete!')
         try:
             module.load_state_dict(
                 torch.load(

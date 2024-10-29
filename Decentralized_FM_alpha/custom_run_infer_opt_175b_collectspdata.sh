@@ -7,8 +7,8 @@ ARGS="--model-name facebook/opt-1.3b \
 --model-type opt-save \
 --seed 42 \
 --fp16 \
---num-layers 12 \
---max-layers 24 \
+--num-layers 6 \
+--max-layers 12 \
 --budget 22800 \
 --num-iters 2000 \
 --dist-url tcp://127.0.0.1:9032 \
@@ -23,3 +23,4 @@ python dist_inference_runner.py $(echo ${ARGS}) --cuda-id 0 --rank 0 \
 python dist_inference_runner.py $(echo ${ARGS}) --cuda-id 1 --rank 1 \
     & \
 wait)
+    
