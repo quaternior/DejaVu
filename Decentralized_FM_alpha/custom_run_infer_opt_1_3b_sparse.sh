@@ -1,9 +1,16 @@
 #(jhkim)
+PATH_TO_MODEL_CHECKPOINT=./pretrained_models/facebook/opt-1.3b
+PATH_TO_SPARSITY_PREDICTOR=../checkpoint/opt-1.3b-sparse-predictor
 file=./c4_val/c4_valid.jsonl
 output_file=./c4_val/output_c4_val_opt_1_3b_sparse.jsonl
 eval_file=./c4_val/eval_c4_val_opt_1_3b_sparse.txt
 
 echo "start running ${file}"
+# Although these will not be in ARGS, it will be read by `os_environ`
+# (Critical variables : SPARSE_PATH, LAYER, SPARSE_ATT)
+# LAYER seems like an threshold. (i.e. If layer_index gets bigger than LAYER, disable the predictor)
+# TOPK, ATTN_TOPK_1, ATTN_TOPK_2 will do nothing
+# SPARSE_ATT works as boolean variable, whether SPARSE_ATT is used or not
 export SPRARSE_PATH=$PATH_TO_SPARSITY_PREDICTOR
 export LAYER=86
 export TOPK=5000
