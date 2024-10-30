@@ -9,7 +9,7 @@ from transformers import AutoConfig, AutoTokenizer, AutoModelForCausalLM
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Convert HF checkpoints')
-    parser.add_argument('--model-name', type=str, default='facebook/opt-1.3b', 
+    parser.add_argument('--model-name', type=str, default='meta-llama/Meta-Llama-3-8B', 
                         help='model-name')
     parser.add_argument('--save-path', type=str, default='./pretrained_models', 
                         help='model-name')

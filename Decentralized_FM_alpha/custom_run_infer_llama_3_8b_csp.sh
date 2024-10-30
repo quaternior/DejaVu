@@ -7,8 +7,8 @@ ARGS="--model-name ./pretrained/meta-llama/Meta-Llama-3-8B \
 --model-type llama-save \
 --seed 42 \
 --fp16 \
---num-layers 12 \
---max-layers 96 \
+--num-layers 16 \
+--max-layers 32 \
 --budget 22800 \
 --num-iters 2000 \
 --dist-url tcp://127.0.0.1:9032 \

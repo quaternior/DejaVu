@@ -3,12 +3,12 @@ file=./c4_train/c4_train.jsonl
     
 echo "start running ${file}"
 
-ARGS="--model-name ./pretrained_models/facebook/opt-1.3b \
+ARGS="--model-name pretrained_models \
 --model-type opt-save \
 --seed 42 \
 --fp16 \
---num-layers 6 \
---max-layers 12 \
+--num-layers 12 \
+--max-layers 24 \
 --budget 22800 \
 --num-iters 2000 \
 --dist-url tcp://127.0.0.1:9032 \

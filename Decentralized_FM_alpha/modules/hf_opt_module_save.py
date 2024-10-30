@@ -128,27 +128,24 @@ class GPTEmbeddings(nn.Module):
         print(model_path)
         if config is None:
             config = GPTConfig.from_pretrained(model_path)
-        #(jhkim)(Add) debug. 
-        print('config: ')   
-        print(config)
+        # #(jhkim)(Add) debug. 
+        # print('config: ')   
+        # print(config)
         # module = cls(config).eval()
         module = torch.nn.utils.skip_init(cls, config).eval()  # fast init
         #(jhkim)(Add)
         try:
-            # module.load_state_dict(
-            #     torch.load(
-            #         os.path.join(
-            #             model_path,
-            #             "pytorch_embs.pt",
-            #         )
-            #     )
-            # )
-            state_dict = torch.hub.load_state_dict_from_url(
-                f"https://huggingface.co/{model_path}/resolve/main/pytorch_embs.pt"
+            module.load_state_dict(
+                torch.load(
+                    os.path.join(
+                        model_path,
+                        "pytorch_embs.pt",
+                    )
+                )
             )
-            module.load_state_dict(state_dict)
         except:
-            print("Cannot load from <model_name>. The model is randomly initialized.")
+            print("embs : Cannot load from <model_name>. The model is randomly initialized.")
+            print(f"Path : {model_path}/pytorch_embs.pt")
         return module
 
     def forward(self, input_ids, past_layer=None, mask=None, **kargs):
@@ -424,7 +421,7 @@ class GPTBlock(OPTDecoderLayer):
                 )
             )
         except:
-            print("Cannot load from <model_name>. The model is randomly initialized.")
+            print(f"layer {layer_index} : Cannot load from <model_name>. The model is randomly initialized.")
 
         module.layer_index = layer_index
         module.self_attn.layer_index = layer_index
@@ -604,7 +601,7 @@ class GPTLMHead(nn.Module):
                 )
             )
         except:
-            print("Cannot load from <model_name>. The model is randomly initialized.")
+            print("lm_head : Cannot load from <model_name>. The model is randomly initialized.")
         return module
 
     def forward(self, x, input_ids=None):
