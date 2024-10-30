@@ -15,12 +15,24 @@ DATA = {
     },
     "30b": {
         "c4": "../data/30b_c4",
+    }, 
+    "1.3b": {
+        "c4": "../Decentralized_FM_alpha",
+    },
+    "llama-3-8b-inst":{
+        "c4": "../Decentralized_FM_alpha/llama-3-8b-inst"
     }
   
 }
 
-MODEL_CHOICES = ['175b', '66b', '30b']
+MODEL_CHOICES = ['175b', '66b', '30b', '1.3b', 'llama-3-8b']
 DATA_CHOICES = ['c4']
+#*jhkim
+#Config from config.json (config.json -> CONFIG)
+#"num_hidden_layers" -> 'num_layer'
+#"hidden_size" -> 'd'
+#"num_attention_heads" -> 'h'
+# ? -> N
 CONFIG = {
     '175b':{
         'num_layer': 95,
@@ -43,6 +55,20 @@ CONFIG = {
         'h': 32,
         'N':400000,
     },
+        '1.3b':{
+        'num_layer': 24,
+        'ckt_storage': "bylayer",
+        'd':2048,
+        'h': 32,
+        'N':400000,
+    },
+    "llama-3-8b-inst":{
+        'num_layer': 24,
+        'ckt_storage': "bylayer",
+        'd':4096,
+        'h': 32,
+        'N':400000,
+    }
 }
 
 class BasicDataset(Dataset):
@@ -67,17 +93,21 @@ class BasicDataset(Dataset):
             exit()
         return x, y
 
+#(jhkim) Modified by issue from https://github.com/FMInference/DejaVu/issues/24
 def get_data(args, l):
     if CONFIG[args.model]['ckt_storage'] == "bylayer":
-        path = f"{DATA[args.model][args.dataset]}/mlp_x_{l}.mmap"
+        #path = f"{DATA[args.model][args.dataset]}/mlp_x_{l}.mmap"
+        path = f"{DATA[args.model][args.dataset]}/mlp_sp_x_{l}.mmap"
         print(f"Reading query from {path}")
         query = np.array(np.memmap(path, dtype='float16', mode='r', shape=(400000,CONFIG[args.model]['d']))[: CONFIG[args.model]['N']])
-    
         path = f"{DATA[args.model][args.dataset]}/mlp_label_{l}.mmap"
         print(f"Reading MLP label from {path}")
         label = np.array(np.memmap(path, dtype='float16', mode='r', shape=(400000,CONFIG[args.model]['d'] * 4))[: CONFIG[args.model]['N']])
-    
-        return  query, label
+        
+        num_valid = (label.sum(-1) > 0).sum()
+        print(num_valid)
+        return  query[:num_valid], label[:num_valid]
+        #return  query, label
 
 def create_dataset(query, labels, args):
 
@@ -100,7 +130,7 @@ def create_dataset(query, labels, args):
 
 def main():
     parser = argparse.ArgumentParser(description="PyTorch OPT Full Model")
-    parser.add_argument("--model", type=str, default="66b", choices = MODEL_CHOICES)
+    parser.add_argument("--model", type=str, default="1.3b", choices = MODEL_CHOICES)
     parser.add_argument("--dataset", type=str, default="c4", choices = DATA_CHOICES)
     parser.add_argument(
         "--L",
@@ -157,7 +187,8 @@ def main():
         query_layer,  train_loader, test_loader, args, device, verbal=True
     )
 
-    path = f"../checkpoint/opt-{args.model}-sparse-predictor/{args.dataset}_{args.k}_layer{args.L}_-{eval_result['Recall']:.4f}-{eval_result['Classifier Sparsity']:.0f}.pt"
+    #(jhkim) Modified with deleting args.k, since training process doesn't need k.
+    path = f"../checkpoint/opt-{args.model}-sparse-predictor/{args.dataset}_layer{args.L}_-{eval_result['Recall']:.4f}-{eval_result['Classifier Sparsity']:.0f}.pt"
     torch.save(best_model, path)
 
 

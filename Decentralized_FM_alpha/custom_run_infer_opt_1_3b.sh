@@ -1,4 +1,5 @@
-#(jhkim)
+#(jhkim) Added to be github
+PATH_TO_MODEL_CHECKPOINT=./pretrained_models/facebook/opt-1.3b
 file=./c4_val/c4_valid.jsonl
 output_file=./c4_val/output_c4_val_opt_1_3b.jsonl
 eval_file=./c4_val/eval_c4_val_opt_1_3b.txt
