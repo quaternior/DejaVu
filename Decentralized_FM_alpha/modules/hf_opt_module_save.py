@@ -399,6 +399,11 @@ class GPTBlock(OPTDecoderLayer):
         self.self_attn_layer_norm = nn.LayerNorm(self.embed_dim, device=device)
         self.fc1 = nn.Linear(self.embed_dim, config.ffn_dim, device=device)
         self.fc2 = nn.Linear(config.ffn_dim, self.embed_dim, device=device)
+        #(jhkim/add) debugging
+        print('fc1 : ')
+        print(self.fc1)
+        print('fc2 : ')
+        print(self.fc2)
         self.final_layer_norm = nn.LayerNorm(self.embed_dim, device=device)
 
         self.config = config

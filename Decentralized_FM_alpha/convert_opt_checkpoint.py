@@ -33,7 +33,7 @@ if __name__ == '__main__':
     print('saving lm_head')
     item = {}
     item['lm_head.weight'] = model.state_dict()['model.lm_head.weight']
-    item['final_layer_norm.weight'] = model.state_dict()['model.decoder.final_layer_norm.weight']
+    item['norm.weight'] = model.state_dict()['model.norm.weight']
     torch.save(item, os.path.join(args.save_path, 'pytorch_lm_head.pt'))
     
     print('saving layers')
