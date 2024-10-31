@@ -9,7 +9,7 @@ from transformers import AutoConfig, AutoTokenizer, AutoModelForCausalLM
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Convert HF checkpoints')
-    parser.add_argument('--model-name', type=str, default='meta-llama/Meta-Llama-3-8B', 
+    parser.add_argument('--model-name', type=str, default='facebook/opt-1.3b', 
                         help='model-name')
     parser.add_argument('--save-path', type=str, default='./pretrained_models', 
                         help='model-name')
@@ -25,20 +25,22 @@ if __name__ == '__main__':
     ## emb
     print('saving embs')
     item = {}
-    item['embed_tokens.weight'] = model.state_dict()['model.embed_tokens.weight']
-    item['rotary_emb.weight'] = model.state_dict()['model.rotary_emb.weight']
+    item['embed_tokens.weight'] = model.state_dict()['model.decoder.embed_tokens.weight']
+    item['embed_positions.weight'] = model.state_dict()['model.decoder.embed_positions.weight']
     torch.save(item, os.path.join(args.save_path, 'pytorch_embs.pt'))
 
     ## out
     print('saving lm_head')
     item = {}
-    item['lm_head.weight'] = model.state_dict()['model.lm_head.weight']
-    item['norm.weight'] = model.state_dict()['model.norm.weight']
+    #(jhkim/issue) It must be "model.lm_head"?
+    item['lm_head.weight'] = model.state_dict()['model.decoder.embed_tokens.weight']
+    item['final_layer_norm.weight'] = model.state_dict()['model.decoder.final_layer_norm.weight']
+    item['final_layer_norm.bias'] = model.state_dict()['model.decoder.final_layer_norm.bias']
     torch.save(item, os.path.join(args.save_path, 'pytorch_lm_head.pt'))
     
     print('saving layers')
     for i in tqdm.tqdm(range(0, config.num_hidden_layers)):
-        layer_prefix = f'model.layers.{i}.'
+        layer_prefix = f'model.decoder.layers.{i}.'
 
         item = {}
 
