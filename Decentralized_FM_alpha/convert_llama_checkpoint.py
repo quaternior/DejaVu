@@ -32,6 +32,7 @@ if __name__ == '__main__':
     ## out
     print('saving lm_head')
     item = {}
+    #(jhkim/issue) It must be "model.lm_head"?
     item['lm_head.weight'] = model.state_dict()['model.decoder.embed_tokens.weight']
     item['final_layer_norm.weight'] = model.state_dict()['model.decoder.final_layer_norm.weight']
     item['final_layer_norm.bias'] = model.state_dict()['model.decoder.final_layer_norm.bias']

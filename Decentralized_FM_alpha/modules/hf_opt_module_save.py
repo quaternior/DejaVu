@@ -543,6 +543,9 @@ class GPTBlock(OPTDecoderLayer):
             hidden_states = self.final_layer_norm(hidden_states)
 
         hidden_states = self.fc1(hidden_states)
+        #(jhkim/add)debugging
+        print('hidden_states(post-fc1) : ')
+        print(hidden_states)
         hidden_states = self.activation_fn(hidden_states)
 
         # collect the output of expand MLP as label for sparsity predictor
