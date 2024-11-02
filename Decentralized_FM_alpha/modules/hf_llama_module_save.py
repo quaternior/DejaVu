@@ -5,13 +5,17 @@ import numpy as np
 import torch
 from torch import nn
 import torch.nn.functional as F
-from transformers.models.opt.modeling_opt import ACT2FN
-from transformers.models.opt.modeling_opt import OPTDecoderLayer
-from transformers.models.opt.modeling_opt import OPTAttention as _OPTAttention
-from transformers.models.opt.modeling_opt import OPTLearnedPositionalEmbedding
-from transformers.models.opt.configuration_opt import OPTConfig as GPTConfig
-#(jhkim)
-import traceback
+# from transformers.models.opt.modeling_opt import ACT2FN
+# from transformers.models.opt.modeling_opt import OPTDecoderLayer
+# from transformers.models.opt.modeling_opt import OPTAttention as _OPTAttention
+# from transformers.models.opt.modeling_opt import OPTLearnedPositionalEmbedding
+# from transformers.models.opt.configuration_opt import OPTConfig as GPTConfig
+
+from transformers.models.llama.modeling_llama import ACT2FN
+from transformers.models.llama.modeling_llama import LlamaDecoderLayer
+from transformers.models.llama.modeling_llama import LlamaAttention as _LlamaAttention
+from transformers.models.llama.modeling_llama import LlamaRotaryEmbedding
+from transformers.models.llama.configuration import LlamaConfig as GPTConfig
 
 def _make_causal_mask(
     input_ids_shape: torch.Size,
@@ -106,9 +110,8 @@ class GPTEmbeddings(nn.Module):
             self.padding_idx,
             device=device,
         )
-        self.embed_positions = OPTLearnedPositionalEmbedding(
-            config.max_position_embeddings, config.hidden_size
-        )
+        #(jhkim/Add) Consider rotary embedding
+        self.rotary_emb = LlamaRotaryEmbedding(config=config)
 
         if config.word_embed_proj_dim != config.hidden_size:
             self.project_in = nn.Linear(
@@ -166,31 +169,33 @@ class GPTEmbeddings(nn.Module):
         input_ids = input_ids.view(-1, input_shape[-1])
 
         inputs_embeds = self.embed_tokens(input_ids)
-
+        #(jhkim) Differs from OPT below here, because of rotary embedding
+        #(jhkim)(TODO) identify the position_ids
         position_ids = torch.arange(0, input_shape[-1], dtype=torch.long, device=device)
         position_ids = position_ids.unsqueeze(0).view(-1, input_shape[-1])
-        position_ids = position_ids + past_length + self.embed_positions.offset
+        position_ids = position_ids + past_length + self.rotary_emb.offset
         position_ids[position_ids < 0] = 0
 
-        position_embeds = F.embedding(
-            position_ids,
-            self.embed_positions.weight,
-            self.embed_positions.padding_idx,
-            self.embed_positions.max_norm,
-            self.embed_positions.norm_type,
-            self.embed_positions.scale_grad_by_freq,
-            self.embed_positions.sparse,
-        )
-
+        # position_embeds = F.embedding(
+        #     position_ids,
+        #     self.embed_positions.weight,
+        #     self.embed_positions.padding_idx,
+        #     self.embed_positions.max_norm,
+        #     self.embed_positions.norm_type,
+        #     self.embed_positions.scale_grad_by_freq,
+        #     self.embed_positions.sparse,
+        # )
+        
         if self.project_in is not None:
             inputs_embeds = self.project_in(inputs_embeds)
 
-        hidden_states = inputs_embeds + position_embeds
+        # hidden_states = inputs_embeds + position_embeds
+        hidden_states = self.rotary_emb(inputs_embeds, position_ids)
 
         return hidden_states
 
 
-class OPTAttention(_OPTAttention):
+class LlamaAttention(_LlamaAttention):
     def __init__(
         self,
         embed_dim: int,
@@ -200,7 +205,7 @@ class OPTAttention(_OPTAttention):
         bias: bool = True,
         device="cpu",
     ):
-        super(_OPTAttention, self).__init__()
+        super(_LlamaAttention, self).__init__()
         self.embed_dim = embed_dim
         self.num_heads = num_heads
         self.dropout = dropout
@@ -211,12 +216,12 @@ class OPTAttention(_OPTAttention):
                 f"embed_dim must be divisible by num_heads (got `embed_dim`: {self.embed_dim}"
                 f" and `num_heads`: {num_heads})."
             )
+        #(jhkim/TODO) Fix the n
         self.scaling = self.head_dim**-0.5
         self.is_decoder = is_decoder
-
         self.k_proj = nn.Linear(embed_dim, embed_dim, bias=bias, device=device)
-        self.v_proj = nn.Linear(embed_dim, embed_dim, bias=bias, device=device)
-        self.q_proj = nn.Linear(embed_dim, embed_dim, bias=bias, device=device)
+        self.v_proj = nn.Linear(embed_dim, embed_dim / 4, bias=bias, device=device)
+        self.q_proj = nn.Linear(embed_dim, embed_dim / 4, bias=bias, device=device)
         self.out_proj = nn.Linear(embed_dim, embed_dim, bias=bias, device=device)
 
     def _shape(self, tensor: torch.Tensor, seq_len: int, bsz: int):
@@ -244,6 +249,8 @@ class OPTAttention(_OPTAttention):
 
         bsz, tgt_len, _ = hidden_states.size()
 
+        # (jhkim/add) rotaryembedding first
+        LlamaRotaryEmbedding(config=config)
         # get query proj
         query_states = self.q_proj(hidden_states) * self.scaling
         # get key, value proj
@@ -378,33 +385,29 @@ class OPTAttention(_OPTAttention):
         return attn_output, attn_weights_reshaped, past_key_value
 
 
-class GPTBlock(OPTDecoderLayer):
+class GPTBlock(LlamaDecoderLayer):
     def __init__(self, config, *args, use_checkpoint=True, device="cpu", **kargs):
         # super().__init__(config=config, *args, **kargs)
-        super(OPTDecoderLayer, self).__init__()
+        super(LlamaDecoderLayer, self).__init__()
         self.embed_dim = config.hidden_size
-        self.self_attn = OPTAttention(
+        self.self_attn = LlamaAttention(
             embed_dim=self.embed_dim,
             num_heads=config.num_attention_heads,
             dropout=config.attention_dropout,
             is_decoder=True,
             device=device,
         )
-        self.do_layer_norm_before = config.do_layer_norm_before
+        #(jhkim) Llama do layer norm after the decoder blocks
+        # self.do_layer_norm_before = config.do_layer_norm_before
         self.dropout = config.dropout
         self.activation_fn = ACT2FN[config.activation_function]
 
         self.activation_dropout = config.activation_dropout
 
-        self.self_attn_layer_norm = nn.LayerNorm(self.embed_dim, device=device)
-        self.fc1 = nn.Linear(self.embed_dim, config.ffn_dim, device=device)
-        self.fc2 = nn.Linear(config.ffn_dim, self.embed_dim, device=device)
-        #(jhkim/add) debugging
-        print('fc1 : ')
-        print(self.fc1)
-        print('fc2 : ')
-        print(self.fc2)
-        self.final_layer_norm = nn.LayerNorm(self.embed_dim, device=device)
+        # self.self_attn_layer_norm = nn.LayerNorm(self.embed_dim, device=device)
+        # self.fc1 = nn.Linear(self.embed_dim, config.ffn_dim, device=device)
+        # self.fc2 = nn.Linear(config.ffn_dim, self.embed_dim, device=device)
+        # self.final_layer_norm = nn.LayerNorm(self.embed_dim, device=device)
 
         self.config = config
         self.use_checkpoint = use_checkpoint

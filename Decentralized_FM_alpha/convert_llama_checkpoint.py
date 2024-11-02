@@ -26,13 +26,15 @@ if __name__ == '__main__':
     print('saving embs')
     item = {}
     item['embed_tokens.weight'] = model.state_dict()['model.embed_tokens.weight']
-    item['rotary_emb.weight'] = model.state_dict()['model.rotary_emb.weight']
+    #item['rotary_emb.weight'] = model.state_dict()['model.rotary_emb.weight']
     torch.save(item, os.path.join(args.save_path, 'pytorch_embs.pt'))
 
     ## out
     print('saving lm_head')
     item = {}
-    item['lm_head.weight'] = model.state_dict()['model.lm_head.weight']
+    # (jhkim/issue) As OPT choose the lm_head.weight as embed_tokens.weight, 
+    # It also must be considered again
+    item['lm_head.weight'] = model.state_dict()['lm_head.weight']
     item['norm.weight'] = model.state_dict()['model.norm.weight']
     torch.save(item, os.path.join(args.save_path, 'pytorch_lm_head.pt'))
     
