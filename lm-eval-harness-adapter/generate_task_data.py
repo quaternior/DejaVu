@@ -24,11 +24,12 @@ if __name__ == "__main__":
 
     with open(args.output_file, "w") as f:
         pass
-
+    
+    # load prompt from eval, 
     class DryRunner:
         def eval(self, batch):
             with open(args.output_file, "a") as f:
-                for text in batch["text"]:
+                for text in batch["question"]:
                     item = {
                         "best_of": 1,
                         "echo": True,
@@ -78,7 +79,7 @@ if __name__ == "__main__":
             ]
         ),
         # provide_description : 
-        provide_description=False,
+        # provide_description=False,
         # num_fewshot : =>deleted in 0.4.0!
         # args.num_fewshot,
         # limit :
