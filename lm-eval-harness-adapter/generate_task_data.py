@@ -80,7 +80,7 @@ if __name__ == "__main__":
         # provide_description : 
         provide_description=False,
         # num_fewshot : =>deleted in 0.4.0!
-        args.num_fewshot,
+        # args.num_fewshot,
         # limit :
         limit=args.num_data,
     )
