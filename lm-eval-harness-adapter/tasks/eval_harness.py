@@ -2,7 +2,16 @@ from functools import partial
 
 import os
 import transformers
-from lm_eval.base import LM
+
+# (jhkim/fix) Resolved by https://github.com/pytorch-labs/gpt-fast/blob/main/eval.py
+try: # lm_eval version 0.4
+    from lm_eval.models.huggingface import HFLM as LM
+    is_ver_4 = True
+except: #lm_eval version 0.3
+    from lm_eval.base import LM
+    is_ver_4 = False
+from lm_eval.models.huggingface import HFLM as LM
+
 from tqdm import tqdm
 import numpy as np
 
@@ -72,7 +81,11 @@ class EvalHarnessAdaptor(LM):
         raise Exception("unimplemented")
 
     def __init__(self, tpu_cluster, seq, batch, shrink, min_seq=None):
-        super().__init__()
+        if is_ver_4:
+            model_name = os.environ.get("MODEL_NAME", "facebook/opt-1.3b")
+            super().__init__(pretrained=model_name)
+        else:
+            super().__init__()
         self.tpu = tpu_cluster
         self.seq = seq
         self.batch = batch

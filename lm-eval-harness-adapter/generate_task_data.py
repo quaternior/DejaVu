@@ -54,12 +54,14 @@ if __name__ == "__main__":
     t = DryRunner()
 
     adaptor = EvalHarnessAdaptor(t, seq, total_batch, shrink=pe != "fixed")
-
+    #(jhkim/issue) task.build_requests() did not find any docs
     results = evaluator.evaluate(
-        adaptor,
-        tasks.get_task_dict(
+        # LM : 
+        lm=adaptor,
+        # task_dict : 
+        task_dict=tasks.get_task_dict(
             [
-                args.task_name
+                args.task_name,
                 # "lambada_openai",
                 # "piqa",
                 # "hellaswag",
@@ -75,9 +77,12 @@ if __name__ == "__main__":
                 # "wsc",
             ]
         ),
-        False,
+        # provide_description : 
+        provide_description=False,
+        # num_fewshot : =>deleted in 0.4.0!
         args.num_fewshot,
-        args.num_data,
+        # limit :
+        limit=args.num_data,
     )
     # dumped = json.dumps(results, indent=2)
     # print(dumped)
