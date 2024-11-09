@@ -129,8 +129,8 @@ class GPTEmbeddings(nn.Module):
         if config is None:
             config = GPTConfig.from_pretrained(model_path)
         # #(jhkim)(Add) debug. 
-        # print('config: ')   
-        # print(config)
+        print('config: ')   
+        print(config)
         # module = cls(config).eval()
         module = torch.nn.utils.skip_init(cls, config).eval()  # fast init
         #(jhkim)(Add)
@@ -549,8 +549,8 @@ class GPTBlock(OPTDecoderLayer):
 
         hidden_states = self.fc1(hidden_states)
         #(jhkim/add)debugging
-        print('hidden_states(post-fc1) : ')
-        print(hidden_states)
+        # print('hidden_states(post-fc1) : ')
+        # print(hidden_states)
         hidden_states = self.activation_fn(hidden_states)
 
         # collect the output of expand MLP as label for sparsity predictor
